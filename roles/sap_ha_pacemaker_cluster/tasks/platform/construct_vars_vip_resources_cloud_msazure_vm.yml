@@ -19,6 +19,11 @@
       (__sap_ha_pacemaker_cluster_available_vip_agents[sap_ha_pacemaker_cluster_vip_method].with is defined and
       'ipaddr' in __sap_ha_pacemaker_cluster_available_vip_agents[sap_ha_pacemaker_cluster_vip_method].with)
 
+- name: "SAP HA Prepare Pacemaker - azure_lb resource agent - Define health check Port if SAP HANA scale-up HA"
+  ansible.builtin.set_fact:
+    __sap_ha_pacemaker_cluster_resource_lb_port: "626{{sap_ha_pacemaker_cluster_hana_instance_number}}"
+  when: sap_ha_pacemaker_cluster_host_type == "hana_scaleup_perf"
+
 - name: "SAP HA Prepare Pacemaker - azure_lb resource agent - Add resource: Azure Load Balancer (NLB L-4) for VIP routing"
   ansible.builtin.set_fact:
     __sap_ha_pacemaker_cluster_resource_primitives: "{{ __sap_ha_pacemaker_cluster_resource_primitives + [__resource_vip] }}"
@@ -30,7 +35,9 @@
       instance_attrs:
         - attrs:
             - name: port
-              value: 62603
+              value: "{{ __sap_ha_pacemaker_cluster_resource_lb_port }}"
+            - name: nc
+              value: "{{ __sap_ha_pacemaker_cluster_register_socat_path.stdout }}"
   when:
     - (sap_ha_pacemaker_cluster_vip_resource_name ~ '_' ~ vip_list_item.key) not in (__sap_ha_pacemaker_cluster_resource_primitives | map(attribute='id'))
     - sap_ha_pacemaker_cluster_vip_method == 'azure_lb'

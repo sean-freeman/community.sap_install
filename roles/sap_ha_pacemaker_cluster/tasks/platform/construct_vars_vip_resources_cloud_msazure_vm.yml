@@ -1,0 +1,36 @@
+---
+# Reminder: This file is included in a loop over a dictionary.
+
+- name: "SAP HA Prepare Pacemaker - ipaddr resource agent - Add resource: OS floating IP (dev/test only)"
+  ansible.builtin.set_fact:
+    __sap_ha_pacemaker_cluster_resource_primitives: "{{ __sap_ha_pacemaker_cluster_resource_primitives + [__resource_vip] }}"
+    __sap_ha_pacemaker_cluster_vip_resource_id: "{{ sap_ha_pacemaker_cluster_vip_resource_name }}_{{ vip_list_item.key }}"
+  vars:
+    __resource_vip:
+      id: "{{ sap_ha_pacemaker_cluster_vip_resource_name }}_{{ vip_list_item.key }}"
+      agent: "{{ __sap_ha_pacemaker_cluster_available_vip_agents[sap_ha_pacemaker_cluster_vip_method].agent }}"
+      instance_attrs:
+        - attrs:
+            - name: ip
+              value: "{{ vip_list_item.value }}"
+  when:
+    - sap_ha_pacemaker_cluster_vip_resource_name ~ '_' ~ vip_list_item.key not in (__sap_ha_pacemaker_cluster_resource_primitives | map(attribute='id'))
+    - (sap_ha_pacemaker_cluster_vip_method == 'ipaddr') or
+      (__sap_ha_pacemaker_cluster_available_vip_agents[sap_ha_pacemaker_cluster_vip_method].with is defined and
+      'ipaddr' in __sap_ha_pacemaker_cluster_available_vip_agents[sap_ha_pacemaker_cluster_vip_method].with)
+
+- name: "SAP HA Prepare Pacemaker - azure_lb resource agent - Add resource: Azure Load Balancer (NLB L-4) for VIP routing"
+  ansible.builtin.set_fact:
+    __sap_ha_pacemaker_cluster_resource_primitives: "{{ __sap_ha_pacemaker_cluster_resource_primitives + [__resource_vip] }}"
+    __sap_ha_pacemaker_cluster_vip_resource_id: "{{ sap_ha_pacemaker_cluster_vip_resource_name }}_{{ vip_list_item.key }}"
+  vars:
+    __resource_vip:
+      id: "{{ sap_ha_pacemaker_cluster_vip_resource_name }}_{{ vip_list_item.key }}"
+      agent: "{{ __sap_ha_pacemaker_cluster_available_vip_agents[sap_ha_pacemaker_cluster_vip_method].agent }}"
+      instance_attrs:
+        - attrs:
+            - name: port
+              value: 62603
+  when:
+    - (sap_ha_pacemaker_cluster_vip_resource_name ~ '_' ~ vip_list_item.key) not in (__sap_ha_pacemaker_cluster_resource_primitives | map(attribute='id'))
+    - sap_ha_pacemaker_cluster_vip_method == 'azure_lb'

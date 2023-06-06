@@ -40,5 +40,5 @@ __sap_ha_pacemaker_cluster_available_vip_agents:
   # Use nc/socat to listen for and respond to health check probe monitoring requests from Azure Load Balancer,
   # if failure to respond then the Load Balancer will perform failover activities
   azure_lb:
-    agent: "ocf:hearbeat:azure-lb"
+    agent: "ocf:heartbeat:azure-lb"
     with: ipaddr

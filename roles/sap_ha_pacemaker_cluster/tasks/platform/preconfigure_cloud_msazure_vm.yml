@@ -1,13 +1,8 @@
 ---
 # Requirement to enable the fencing resource to function.
 
-- name: "SAP HA Prepare Pacemaker - MS Azure VM - Ensure socat binary installed"
-  ansible.builtin.package:
-    name:
-      - socat
-    state: present
 
-# pcmk_host_map format: <hostname1>:<host1-id>;<hostname2>:<host2-id>...
+# pcmk_host_map format: <hostname1>:<hostname1>;<hostname2>:<hostname2>...
 - name: "SAP HA Prepare Pacemaker - MS Azure VM - Assemble host mapping"
   ansible.builtin.set_fact:
     __sap_ha_pacemaker_cluster_pcmk_host_map: >-

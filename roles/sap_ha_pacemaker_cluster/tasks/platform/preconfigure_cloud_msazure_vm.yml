@@ -7,13 +7,6 @@
       - socat
     state: present
 
-- name: "SAP HA Prepare Pacemaker - MS Azure VM - Verify socat binary path"
-  ansible.builtin.shell: |
-    which socat
-  register: __sap_ha_pacemaker_cluster_register_socat_path
-  changed_when: false
-  check_mode: false
-
 # pcmk_host_map format: <hostname1>:<host1-id>;<hostname2>:<host2-id>...
 - name: "SAP HA Prepare Pacemaker - MS Azure VM - Assemble host mapping"
   ansible.builtin.set_fact:

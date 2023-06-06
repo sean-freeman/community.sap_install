@@ -8,7 +8,7 @@
   vars:
     __resource_vip:
       id: "{{ sap_ha_pacemaker_cluster_vip_resource_name }}_{{ vip_list_item.key }}"
-      agent: "{{ __sap_ha_pacemaker_cluster_available_vip_agents[sap_ha_pacemaker_cluster_vip_method].agent }}"
+      agent: "{{ __sap_ha_pacemaker_cluster_available_vip_agents['ipaddr'].agent }}"
       instance_attrs:
         - attrs:
             - name: ip
@@ -23,6 +23,15 @@
   ansible.builtin.set_fact:
     __sap_ha_pacemaker_cluster_resource_lb_port: "626{{sap_ha_pacemaker_cluster_hana_instance_number}}"
   when: "'hana_scaleup' in sap_ha_pacemaker_cluster_host_type[0]"
+
+- name: "SAP HA Prepare Pacemaker - azure_lb resource agent - Verify socat binary path"
+  ansible.builtin.shell: |
+    which socat
+  register: __sap_ha_pacemaker_cluster_register_socat_path
+
+- name: test123
+  debug:
+    msg: "{{ __sap_ha_pacemaker_cluster_resource_primitives }}"
 
 - name: "SAP HA Prepare Pacemaker - azure_lb resource agent - Add resource: Azure Load Balancer (NLB L-4) for VIP routing"
   ansible.builtin.set_fact:
@@ -39,6 +48,10 @@
             - name: nc
               value: "{{ __sap_ha_pacemaker_cluster_register_socat_path.stdout }}"
   when:
-    - __vip_group.id is not in (__sap_ha_pacemaker_cluster_resource_groups | map(attribute='id'))
-    - sap_ha_pacemaker_cluster_vip_resource_name ~ '_' ~ vip_list_item.key not in (__sap_ha_pacemaker_cluster_resource_primitives | map(attribute='id'))
+    - __health_check.id is not in (__sap_ha_pacemaker_cluster_resource_primitives | map(attribute='id'))
+    - ('hc' ~ sap_ha_pacemaker_cluster_vip_resource_name ~ '_' ~ vip_list_item.key) not in (__sap_ha_pacemaker_cluster_resource_primitives | map(attribute='id'))
     - sap_ha_pacemaker_cluster_vip_method == 'azure_lb'
+
+- name: test456
+  debug:
+    msg: "{{ __sap_ha_pacemaker_cluster_resource_primitives }}"

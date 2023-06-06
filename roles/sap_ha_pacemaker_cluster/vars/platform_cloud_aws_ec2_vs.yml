@@ -30,7 +30,7 @@ sap_ha_pacemaker_cluster_vip_resource_group_name: vipgroup
 __sap_ha_pacemaker_cluster_available_vip_agents:
   # Testing only! Not officially supported for SAP on AWS.
   ipaddr:
-    agent: "ocf:heartbeat:IPAddr2"
+    agent: "ocf:heartbeat:IPaddr2"
 
   # Testing only! Not officially supported for SAP on AWS. Updates VM Instance network interface (ENI) with Secondary Private IP.
   awsvip:

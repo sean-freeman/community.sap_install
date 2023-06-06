@@ -34,7 +34,7 @@ __sap_ha_pacemaker_cluster_available_vip_agents:
   # Execution via Python urllib to GCP Compute Engine API and GCP Metadata Server API
   # heartbeat:gcp-vpc-move-route is the replacement of heartbeat:gcp-vpc-move-ip (which uses execution via GCloud CLI, and is itself a fork of external/gcp:route)
   ipaddr:
-    agent: "ocf:heartbeat:IPAddr2"
+    agent: "ocf:heartbeat:IPaddr2"
   haproxy:
     agent: "ocf:heartbeat:haproxy"
     with: ipaddr

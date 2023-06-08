@@ -1,15 +1,2 @@
 ---
 # Requirement to enable the fencing resource to function.
-
-- name: "SAP HA Prepare Pacemaker - IBM Power VS from IBM Cloud - Set variable for fencing agent"
-  ansible.builtin.set_fact:
-    sap_ha_pacemaker_cluster_ibmcloud_powervs_host_guid: "{{__sap_ha_pacemaker_cluster_register_ibmcloud_powervs_host}}"
-
-# pcmk_host_map format: <hostname1>:<host1-id>;<hostname2>:<host2-id>...
-- name: "SAP HA Prepare Pacemaker - IBM Power VS from IBM Cloud - Assemble host mapping"
-  ansible.builtin.set_fact:
-    __sap_ha_pacemaker_cluster_pcmk_host_map: >-
-      {% for node in ansible_play_hosts_all -%}
-        {{ hostvars[node].ansible_hostname }}:{{ hostvars[node].sap_ha_pacemaker_cluster_ibmcloud_powervs_host_guid }}
-      {%-  if not loop.last %};{%- endif -%}
-      {%- endfor %}

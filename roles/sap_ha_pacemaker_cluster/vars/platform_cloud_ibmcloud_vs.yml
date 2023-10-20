@@ -38,8 +38,12 @@ __sap_ha_pacemaker_cluster_available_vip_agents:
   ipaddr:
     agent: "ocf:heartbeat:IPaddr2"
 
-  # Use haproxy daemon to listen for and respond to health check probe monitoring private network requests from IBM Cloud Application Load Balancer (ALB),
+  # Refer to IBM Cloud Load Balancer - Private Network Load Balancer (NLB Layer 4) for HA within 1 AZ of 1 Region, https://cloud.ibm.com/docs/vpc?topic=vpc-network-load-balancers
+  # Refer to IBM Cloud Load Balancer - Private Application Load Balancer (ALB Layer 7) for HA across 2 AZ of 1 Region, https://cloud.ibm.com/docs/vpc?topic=vpc-load-balancers-about
+  # The IBM Cloud Load Balancer's Back-end Pool Health Check will poll for connection response from a host listening port (using a designated OS process such as netcat, socat or HAProxy)
+
+  # Use haproxy daemon to listen for and respond to health check probe monitoring private network requests from IBM Cloud Load Balancer service,
   # if failure to respond then the Load Balancer will perform failover activities
   haproxy_with_ipaddr:
-    agent: "ocf:heartbeat:haproxy"
+    agent: "service:haproxy"
     with: ipaddr

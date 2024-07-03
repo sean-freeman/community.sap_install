@@ -1,4 +1,5 @@
 ---
+
 # This is an input variables file automatically generated for use with the
 # 'ha_cluster' linux system role.
 #
@@ -10,6 +11,14 @@ ha_cluster_cluster_name: {{ ha_cluster_cluster_name | default('<ha_cluster LSR d
 # Properties that enable and control cluster behavior
 ha_cluster_cluster_properties:
 {{ ha_cluster_cluster_properties | default() | to_nice_yaml(indent=2) }}
+
+# Definition of resource defaults
+ha_cluster_resource_defaults:
+{{ ha_cluster_resource_defaults | default() | to_nice_yaml(indent=2) }}
+
+# Definition of operation defaults
+ha_cluster_resource_operation_defaults:
+{{ ha_cluster_resource_operation_defaults | default() | to_nice_yaml(indent=2) }}
 
 # Definition of resources which depend on other resources
 ha_cluster_constraints_colocation:
@@ -47,4 +56,8 @@ ha_cluster_resource_groups:
 
 # Definition of all cluster resources
 ha_cluster_resource_primitives:
-{{ ha_cluster_resource_primitives | default()| to_nice_yaml(indent=2) }}
+{{ ha_cluster_resource_primitives | default() | to_nice_yaml(indent=2) }}
+
+# Definition of corosync totem settings
+ha_cluster_totem:
+{{ ha_cluster_totem | default() | to_nice_yaml(indent=2) }}

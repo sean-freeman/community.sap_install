@@ -1,0 +1,31 @@
+---
+
+# Workflow for ansible-lint of a role, using reusable workflow
+
+name: ansible-lint of the role sap_install_media_detect
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'roles/sap_install_media_detect/**'
+  pull_request:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'roles/sap_install_media_detect/**'
+  workflow_dispatch:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'roles/sap_install_media_detect/**'
+
+jobs:
+  ansible-lint-exec:
+    uses: sap-linuxlab/community.sap_install/.github/workflows/ansible-lint-sap_reusable_workflow.yml@main
+    with:
+      role: sap_install_media_detect

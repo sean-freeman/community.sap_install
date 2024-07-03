@@ -5,7 +5,7 @@
 ## DISPLAY env var, not required for when Silent installation (-silent operator for RUNINSTALLER)
 ## DB_SID env var / -db_sid option. If unset then error "[FATAL] [INS-35072] The SID cannot be left blank."
 ## ORACLE_BASE env var / -oracle_base option, Oracle Base /oracle. If unset then error "[FATAL] [INS-32013] The Oracle base location is empty." If option -oracle_base unused, may cause "Using new ORACLE_BASE=/oracle/<DB_SID> instead of ORACLE_BASE=/oracle" which will cause directory lookup failure and error "[FATAL] [INS-35072] The SID cannot be left blank."
-## ORACLE_HOME env var / -install_home opiton, Oracle Home - Installation
+## ORACLE_HOME env var / -install_home option, Oracle Home - Installation
 ## ORACLE_HOME_NAME env var / -oracle_home_name option, Oracle Home - Installation name in Oracle Inventory. Uses a naming convention - see https://docs.oracle.com/cd/E26854_01/em.121/e37799/ch2_manage_oh.htm#OUICG137
 ## OHRDBMS env var / -runtime_home, Oracle Home - Runtime
 ## ORA_GOLD_IMAGE_FILE_L env var / -oracle_stage option, Oracle home image file path. If unset then error "(ERROR  ) -  Error during unzip occurred" where no file is given to extract
@@ -84,7 +84,7 @@
   ignore_errors: true
   ansible.builtin.shell: |
     setenv DB_SID "{{ sap_anydb_install_oracle_sid }}"
-    export ORACLE_BASE="{{ sap_anydb_install_oracle_base }}"
+    setenv ORACLE_BASE "{{ sap_anydb_install_oracle_base }}"
     setenv ORACLE_HOME "$ORACLE_BASE/$DB_SID/19.0.0"
     set CURRENT_DATE_ISO=`date +%Y-%m-%d`
     set ORACLEDB_RESP_GENERATED_FILE=`find $ORACLE_BASE -iname "db_$CURRENT_DATE_ISO*"`
@@ -93,7 +93,7 @@
 - name: Oracle DB - Find log files
   become_user: root
   ansible.builtin.shell: |
-    ls -1 /oraInventory/logs/InstallActions*/installActions*
+    ls -1 {{ sap_anydb_install_oracle_inventory_central }}/logs/InstallActions*/installActions*
   register: __sap_anydb_install_oracle_logs
 
 - name: Oracle DB - View the following Oracle DB installation log files

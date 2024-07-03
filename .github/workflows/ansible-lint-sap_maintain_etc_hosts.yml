@@ -1,0 +1,31 @@
+---
+
+# Workflow for ansible-lint of a role, using reusable workflow
+
+name: ansible-lint of the role sap_maintain_etc_hosts
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'roles/sap_maintain_etc_hosts/**'
+  pull_request:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'roles/sap_maintain_etc_hosts/**'
+  workflow_dispatch:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'roles/sap_maintain_etc_hosts/**'
+
+jobs:
+  ansible-lint-exec:
+    uses: sap-linuxlab/community.sap_install/.github/workflows/ansible-lint-sap_reusable_workflow.yml@main
+    with:
+      role: sap_maintain_etc_hosts

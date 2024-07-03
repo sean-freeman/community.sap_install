@@ -15,7 +15,7 @@ This Ansible Role has been tested for the following SAP software deployment type
 
 This Ansible Role is agnostic, and will run on any Infrastructure Platform. Only LVM is used for local/block storage, to allow for further expansion if the SAP System requires further storage space in the future.
 
-Please note, while this Ansible Role has protection against overwrite of existing disks and filesystems - sensibile review and care is required for any automation of disk storage. Please review the documentation and samples/examples carefully. It is strongly suggested to initially execute the Ansible Playbook calling this Ansible Role, with `ansible-playbook --check` for Check Mode - this will perform no changes to the host and show which changes would be made.
+Please note, while this Ansible Role has protection against overwrite of existing disks and filesystems - sensible review and care is required for any automation of disk storage. Please review the documentation and samples/examples carefully. It is strongly suggested to initially execute the Ansible Playbook calling this Ansible Role, with `ansible-playbook --check` for Check Mode - this will perform no changes to the host and show which changes would be made.
 
 ## Requirements
 
@@ -104,7 +104,7 @@ Describes the filesystems to be configured.<br>
 - **nfs_server**<br>
     When defining an NFS filesystem, this is the address of the NFS server.<br>The address must contain the root path, in which the mount directories exist or will be created.<br>For example, `192.168.1.100:/`.
 - **swap_path**<br>
-    The path to the swap file.<br>When this option is defined for a swap filesystem definition, it will create a swap file on an existing filesytem.
+    The path to the swap file.<br>When this option is defined for a swap filesystem definition, it will create a swap file on an existing filesystem.
 
 Example:
 

@@ -5,9 +5,10 @@
 name: ansible-test sanity of the collection
 
 on:
-  schedule:
-    - cron: '31 12 * * 1'
-
+  pull_request:
+    branches:
+      - main
+      - dev
   workflow_dispatch:
 
 jobs:
@@ -16,12 +17,12 @@ jobs:
 
     steps:
       - name: Check out the code
-        uses: actions/checkout@main
+        uses: actions/checkout@v4
 
       - name: Set up Python 3
-        uses: actions/setup-python@main
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.12'
 
       - name: Install test dependencies
         run: |

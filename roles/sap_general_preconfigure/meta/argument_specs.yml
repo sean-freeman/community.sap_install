@@ -261,7 +261,7 @@ argument_specs:
       sap_general_preconfigure_modify_selinux_labels:
         default: true
         description:
-          - Set to `false` if you do not want to modify the SELinux labels for the SAP directores set
+          - Set to `false` if you do not want to modify the SELinux labels for the SAP directories set
           - in variable `sap_general_preconfigure_sap_directories`.
         required: false
         type: bool
@@ -310,21 +310,21 @@ argument_specs:
         required: false
         type: str
 
-      sap_hostname:
+      sap_general_preconfigure_hostname:
         default: "{{ ansible_hostname }}"
         description:
           - The hostname to be used for updating or checking `/etc/hosts` entries.
         required: false
         type: str
 
-      sap_domain:
+      sap_general_preconfigure_domain:
         default: "{{ ansible_domain }}"
         description:
           - The DNS domain name to be used for updating or checking `/etc/hosts` entries.
         required: false
         type: str
 
-      sap_ip:
+      sap_general_preconfigure_ip:
         default: "{{ ansible_default_ipv4.address }}"
         description:
           - The IPV4 address to be used for updating or checking `/etc/hosts` entries.

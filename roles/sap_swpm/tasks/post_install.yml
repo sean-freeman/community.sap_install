@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 ---
 
 # Reason for noqa: The command might change things but we do not yet attempt to find out
@@ -16,7 +17,7 @@
 - name: SAP SWPM Post Install - Firewall Setup
   ansible.builtin.include_tasks: post_install/firewall.yml
   when:
-    - "sap_swpm_setup_firewall | bool"
+    - sap_swpm_setup_firewall
 
 ########################################################################################################################
 
@@ -26,8 +27,8 @@
       - '   SAP SWPM deployment successfully completed '
       - ' '
       - '   SAP Product        -       {{ sap_swpm_product_catalog_id }}  '
-      - '   SID                -       {{ sap_swpm_sid }} '
-      - '   Primary Instance   -       {{ sap_swpm_pas_instance_nr }} '
+      - '   SID                -       {{ sap_swpm_sid | d("") }} '
+      - '   Primary Instance   -       {{ sap_swpm_pas_instance_nr | d("") }} '
       - '   Host               -       {{ ansible_hostname }} '
       - '   FQDN               -       {{ ansible_fqdn }}  '
       - '   IP                 -       {{ ansible_default_ipv4.address | d(ansible_all_ipv4_addresses[0]) }}  '
@@ -46,7 +47,7 @@
     /usr/sap/{{ sap_swpm_sid }}/hdbclient/hdbuserstore \
     SET DEFAULT \
     {{ sap_swpm_db_host }}:3{{ sap_swpm_db_instance_nr }}13@{{ sap_swpm_db_sid }} \
-    {{ sap_swpm_db_schema_abap }} '{{ sap_swpm_db_system_password }}'
+    {{ sap_swpm_db_schema_abap }} '{{ sap_swpm_db_schema_abap_password }}'
   args:
     executable: /bin/bash
   become: true
@@ -56,3 +57,13 @@
     - __sap_swpm_post_install_register_hdbuserstore_exists.stat.exists
   register: __sap_swpm_post_install_register_hdbuserstore_connection
   changed_when: __sap_swpm_post_install_register_hdbuserstore_connection is succeeded
+
+# Now that SWPM finished we may need to deal with SUM before continuing when sap_swpm_sum_start: 'true'
+# and if we are doing OneHost or CI/PAS installation
+# If observer mode is enabled, SWPM will wait for SUM to finish before continuing so we can't do anything here
+- name: SAP SWPM Post Install - Control SUM if required
+  ansible.builtin.include_tasks: post_install/sum_push_to_finish.yml
+  when:
+    - sap_swpm_sum_start
+    - not sap_swpm_swpm_observer_mode
+    - "'NW_ABAP_CI:' in sap_swpm_product_catalog_id or 'NW_ABAP_OneHost:' in sap_swpm_product_catalog_id"

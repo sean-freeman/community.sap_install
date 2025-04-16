@@ -1,31 +1,52 @@
+# SPDX-License-Identifier: Apache-2.0
 ---
 # defaults file for sap_netweaver_preconfigure
 
 # Perform an assertion run:
-sap_netweaver_preconfigure_assert: no
+sap_netweaver_preconfigure_assert: false
 
-# In case of an assertion run, if set to "yes", the role will abort for any assertion error:
-sap_netweaver_preconfigure_assert_ignore_errors: no
+# In case of an assertion run, if set to true, the role will abort for any assertion error:
+sap_netweaver_preconfigure_assert_ignore_errors: false
 
 sap_netweaver_preconfigure_min_swap_space_mb: '20480'
 
-sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: yes
+sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: true
 
 sap_netweaver_preconfigure_rpath: '/usr/sap/lib'
 
-sap_netweaver_preconfigure_use_adobe_doc_services: no
+sap_netweaver_preconfigure_use_adobe_doc_services: false
 
-#SLES Only
-sap_netweaver_preconfigure_saptune_version: '3.0.2'
+sap_netweaver_preconfigure_packages: "{{ __sap_netweaver_preconfigure_packages }}"
+# The list of packages to be installed for SAP NETWEAVER.
+# The default for this variable is set in the vars file which corresponds to the detected OS version.
 
-## The following variables control aspects of saptune and are only relevant for SLES for SAP Application
+sap_netweaver_preconfigure_patterns: "{{ __sap_netweaver_preconfigure_patterns }}"
+# (SUSE specific) The list of the zypper patterns to install.
+# The default for this parameter is set in the vars file which corresponds to the detected OS version.
 
-# The saptune solution to apply.  For netweaver, the only appropriate options are:
-#NETWEAVER
-#NETWEAVER+HANA
-#S4HANA-APP+DB
-#S4HANA-APPSERVER
-#S4HANA-DBSERVER
-# The default value is NETWEAVER
+# Set this parameter to `true` to update the system to the latest package levels.
+sap_netweaver_preconfigure_update: false
 
+# Set to `true` if you want to perform a reboot at the end of the role, if necessary.
+sap_netweaver_preconfigure_reboot_ok: false
+
+# If `sap_netweaver_preconfigure_reboot_ok` is set to `false`, which is the default, a reboot requirement should not
+# remain unnoticed. For this reason, we let the role fail. Set this parameter to `false` to override this behavior.
+# Can be useful if you want to implement your own reboot handling.
+sap_netweaver_preconfigure_fail_if_reboot_required: true
+
+# By default, the role will run `grub2-mkconfig` to update the Grub configuration if necessary.
+# Set this parameter to `false` if this is not desired.
+sap_netweaver_preconfigure_run_grub2_mkconfig: true
+
+# (SUSE specific) Version of saptune to install.
+# It is recommended to install latest version by keeping this variable empty.
+# This will replace the current installed version if present, even downgrade if necessary.
+sap_netweaver_preconfigure_saptune_version: ''
+
+# (SUSE specific) Saptune solution to be applied.
+# Available options for Netweaver are: NETWEAVER, NETWEAVER+HANA, S4HANA-APP+DB, S4HANA-APPSERVER, S4HANA-DBSERVER
 sap_netweaver_preconfigure_saptune_solution: NETWEAVER
+
+# (SUSE specific) Apply saptune solution regardless if it is already enabled and verified.
+sap_netweaver_preconfigure_saptune_solution_force: false

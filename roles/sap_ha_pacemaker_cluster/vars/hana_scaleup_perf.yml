@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 ---
 # SAP HANA Scale-Up specific parameter values
 #
@@ -7,31 +8,36 @@
 #  minimal base packages required for all scenarios
 #  scenario specific packages
 __sap_ha_pacemaker_cluster_sap_extra_packages: "{{
-  __sap_ha_pacemaker_cluster_sap_extra_packages_dict.minimal | default([])
+  __sap_ha_pacemaker_cluster_sap_extra_packages_dict.minimal | d([])
   + (__sap_ha_pacemaker_cluster_sap_extra_packages_dict.hana_angi
     if __sap_ha_pacemaker_cluster_saphanasr_angi_available
     else __sap_ha_pacemaker_cluster_sap_extra_packages_dict.hana_scaleup) }}"
 
 # Set variable with dictionary name based on angi availability
 __sap_ha_pacemaker_cluster_hana_hook_dictionary:
-  "{{ '__sap_ha_pacemaker_cluster_hook_' + sap_ha_pacemaker_cluster_host_type[0]
+  "{{ '__sap_ha_pacemaker_cluster_hook_'
+  + (sap_ha_pacemaker_cluster_host_type | select('search', 'hana'))[0]
   + ('_angi' if __sap_ha_pacemaker_cluster_saphanasr_angi_available else '') }}"
 
 # Recommended srhooks are set to true only if default dictionary is populated
 __sap_ha_pacemaker_cluster_hana_hook_tkover:
-  "{{ true if lookup('ansible.builtin.vars', __sap_ha_pacemaker_cluster_hana_hook_dictionary).tkover
-   is defined else false }}"
+  "{{ true if
+    (lookup('ansible.builtin.vars', __sap_ha_pacemaker_cluster_hana_hook_dictionary).tkover
+    is defined and (sap_ha_pacemaker_cluster_hana_hook_tkover | bool))
+    else false }}"
 __sap_ha_pacemaker_cluster_hana_hook_chksrv:
-  "{{ true if lookup('ansible.builtin.vars', __sap_ha_pacemaker_cluster_hana_hook_dictionary).chksrv
-   is defined else false }}"
+  "{{ true if
+    (lookup('ansible.builtin.vars', __sap_ha_pacemaker_cluster_hana_hook_dictionary).chksrv
+    is defined and (sap_ha_pacemaker_cluster_hana_hook_chksrv | bool))
+    else false }}"
 
 # Combine final list of srhooks based on user input and angi availability
 __sap_ha_pacemaker_cluster_hana_hooks: "{{
   lookup('ansible.builtin.vars', __sap_ha_pacemaker_cluster_hana_hook_dictionary).saphanasr
   + (lookup('ansible.builtin.vars', __sap_ha_pacemaker_cluster_hana_hook_dictionary).tkover
-   | default([]) if __sap_ha_pacemaker_cluster_hana_hook_tkover else [])
+   | d([]) if __sap_ha_pacemaker_cluster_hana_hook_tkover else [])
   + (lookup('ansible.builtin.vars', __sap_ha_pacemaker_cluster_hana_hook_dictionary).chksrv
-   | default([]) if __sap_ha_pacemaker_cluster_hana_hook_chksrv else [])
+   | d([]) if __sap_ha_pacemaker_cluster_hana_hook_chksrv else [])
   }}"
 
 # Define sap_ha_pacemaker_cluster_hadr_provider_name for jinja2 template

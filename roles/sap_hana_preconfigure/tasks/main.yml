@@ -1,16 +1,39 @@
+# SPDX-License-Identifier: Apache-2.0
 ---
 
 - name: Display the role path
   ansible.builtin.debug:
     var: role_path
 
-- name: Include OS specific vars
-  ansible.builtin.include_vars: '{{ item }}'
-  with_first_found:
-    - '{{ ansible_distribution.split("_")[0] }}_{{ ansible_distribution_major_version }}.yml'
-    - '{{ ansible_distribution }}_{{ ansible_distribution_version }}.yml'
-    - '{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml'
-    - '{{ ansible_os_family }}.yml'
+# Load variable files in order:
+# 1. Suse.yml / RedHat.yml - Specific to OS family.
+# 2. SLES_15.yml / RedHat_9.yml - Specific to distribution (SLES, SLES_SAP or RedHat) and major release.
+# 3. SLES_15.6.yml / RedHat_9.2 - Specific to distribution (SLES, SLES_SAP or RedHat) and minor release.
+# 4. SLES_SAP_15.yml - Specific to distribution SLES_SAP and major release.
+# 5. SLES_SAP_15.6.yml - Specific to distribution SLES_SAP and minor release.
+- name: Include OS specific vars, specific
+  ansible.builtin.include_vars: "{{ __vars_file }}"
+  loop: "{{ __var_files }}"
+  vars:
+    __vars_file: "{{ role_path }}/vars/{{ item }}"
+    __distribution_major: "{{ ansible_distribution ~ '_' ~ ansible_distribution_major_version }}"
+    __distribution_minor: "{{ ansible_distribution ~ '_' ~ ansible_distribution_version }}"
+    # Enables loading of shared vars between SLES and SLES_SAP
+    __distribution_major_split: "{{ ansible_distribution.split('_')[0] ~ '_' ~ ansible_distribution_major_version }}"
+    __distribution_minor_split: "{{ ansible_distribution.split('_')[0] ~ '_' ~ ansible_distribution_version }}"
+    __var_files: >-
+      {{
+        [
+          ansible_os_family ~ '.yml',
+          (ansible_distribution ~ '.yml') if ansible_distribution != ansible_os_family else None,
+          (__distribution_major_split ~ '.yml') if __distribution_major_split != __distribution_major else None,
+          (__distribution_minor_split ~ '.yml') if __distribution_minor_split != __distribution_minor else None,
+          __distribution_major ~ '.yml',
+          __distribution_minor ~ '.yml'
+        ] | select('defined') | select('string') | list
+      }}
+  when: __vars_file is file
+
 
 - name: Set filename prefix to empty string if role is run in normal mode
   ansible.builtin.set_fact:
@@ -27,17 +50,6 @@
     __sap_hana_preconfigure_fact_ansible_distribution_minor_version: '{{ ansible_distribution_version.split(".")[1] }}'
   when: ansible_distribution == 'RedHat'
 
-# Requirement for package_facts Ansible Module
-- name: For SLES ensure OS Package for Python Lib of rpm bindings is enabled for System Python
-  ansible.builtin.package:
-    name: python3-rpm
-    state: present
-  when: ansible_os_family == "Suse"
-
-# required for installation and configuration tasks:
-- name: Gather package facts
-  ansible.builtin.package_facts:
-
 - name: Display the content of sap_general_preconfigure_fact_reboot_required
   ansible.builtin.debug:
     var: sap_general_preconfigure_fact_reboot_required
@@ -48,9 +60,6 @@
   with_first_found:
     - '{{ ansible_distribution.split("_")[0] }}'
     - '{{ ansible_distribution }}'
-
-- name: Gather package facts again after the installation phase
-  ansible.builtin.package_facts:
 
 - name: Include configuration.yml
   ansible.builtin.include_tasks: '{{ item }}/{{ assert_prefix }}configuration.yml'

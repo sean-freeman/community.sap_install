@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 ---
 # BEGIN: Default Variables for sap_hana_preconfigure
 
@@ -99,12 +100,18 @@ sap_hana_preconfigure_modify_selinux_labels: true
 # how the variable `sap_hana_preconfigure_create_directories` (see above) is set.
 
 sap_hana_preconfigure_packages: "{{ __sap_hana_preconfigure_packages }}"
-# List of RHEL packages to be installed for SAP HANA. For RHEL 8 and later, you can choose to install either the default list
+# The list of packages to be installed for SAP HANA.
+# For RHEL 8 and later, you can choose to install either the default list
 # or a list of the minimum required packages for SAP HANA server (parameter `__sap_hana_preconfigure_packages_min_install`).
+# The default for this variable is set in the vars file which corresponds to the detected OS version.
 
 sap_hana_preconfigure_min_package_check: true
 # SAP HANA requires certain minimum package versions to be supported. These minimum levels are listed in SAP Note 2235581.
 # Set this parameter to `false` if you want to ignore these requirements.
+
+sap_hana_preconfigure_patterns: "{{ __sap_hana_preconfigure_patterns }}"
+# (SUSE specific) The list of the zypper patterns to install.
+# The default for this parameter is set in the vars file which corresponds to the detected OS version.
 
 sap_hana_preconfigure_update: false
 # Set this parameter to `true` to update the system to the latest package levels.
@@ -128,10 +135,6 @@ sap_hana_preconfigure_kernel_parameters_ppc64le: "{{ __sap_hana_preconfigure_ker
 
 sap_hana_preconfigure_use_netapp_settings_nfs: false
 # Set to `true` to also set NetApp NFS required kernel parameters.
-
-sap_hana_preconfigure_use_netapp_settings_nfsv3: false
-# If `sap_hana_preconfigure_use_netapp_settings_nfs` is set to `true` and NFS Version 3 is to be used,
-# this parameter must be set to `true` as well.
 
 sap_hana_preconfigure_install_ibm_power_tools: true
 # Set this parameter to `false` to not install the IBM Power Systems service and productivity tools.
@@ -169,18 +172,21 @@ sap_hana_preconfigure_run_grub2_mkconfig: true
 # It will be used to configure process limits as per step "Configuring Process Resource Limits" of SAP note 2772999.
 # Example: See README.md
 
-sap_hana_preconfigure_saptune_version: ''
-# Version of saptune to install (SLES for SAP Applications).
+# sap_hana_preconfigure_thp: (not defined by default)
+# Override the default setting for THP, which is determined automatically by the role, depending on the RHEL version.
+# Can be one of 'always', 'madvise', or 'never'.
+
+# (SUSE specific) Version of saptune to install.
 # It is recommended to install latest version by keeping this variable empty.
 # This will replace the current installed version if present, even downgrade if necessary.
+sap_hana_preconfigure_saptune_version: ''
 
+# (SUSE specific) Saptune solution to be applied.
+# Available options for HANA are: HANA, NETWEAVER+HANA, S4HANA-APP+DB, S4HANA-DBSERVER
 sap_hana_preconfigure_saptune_solution: 'HANA'
-# The saptune solution to apply (SLES for SAP Applications).
-# Possible Values:
-# - HANA
-# - NETWEAVER+HANA
-# - S4HANA-APP+DB
-# - S4HANA-DBSERVER
+
+# (SUSE specific) Apply saptune solution regardless if it is already enabled and verified.
+sap_hana_preconfigure_saptune_solution_force: false
 
 sap_hana_preconfigure_saptune_azure: false
 # On Azure, TCP timestamps, reuse and recycle should be disabled (SLES for SAP Applications).

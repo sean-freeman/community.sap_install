@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 ---
 # Requires: ansible 2.11
 # Argument specifications in this separate file maintain backwards compatibility.
@@ -6,19 +7,6 @@ argument_specs:
   main:
     short_description: Variables for SAP NetWeaver preconfiguration
     options:
-
-#      sap_netweaver_preconfigure_...
-#        default:
-#        description:
-#           -
-#        example:
-#
-#        required: false
-#        type:
-#        options: # additional options for lists and dicts
-#          <param>:
-#            description:
-#            ...
 
       sap_netweaver_preconfigure_config_all:
         default: true
@@ -60,6 +48,24 @@ argument_specs:
         required: false
         type: bool
 
+      sap_netweaver_preconfigure_packages:
+        default: "{{ __sap_netweaver_preconfigure_packages }}"
+        description:
+          - The list of packages to be installed for SAP NETWEAVER.
+          - The default for this variable is set in the vars file which corresponds to the detected OS version.
+        required: false
+        type: list
+        elements: str
+
+      sap_netweaver_preconfigure_patterns:
+        default: "{{ __sap_netweaver_preconfigure_patterns }}"
+        description:
+          - (SUSE specific) The list of the zypper patterns to install.
+          - The default for this parameter is set in the vars file which corresponds to the detected OS version.
+        required: false
+        type: list
+        elements: str
+
       sap_netweaver_preconfigure_min_swap_space_mb:
         default: '20480'
         description:
@@ -95,16 +101,17 @@ argument_specs:
         type: bool
 
       sap_netweaver_preconfigure_saptune_version:
-        default: '3.0.2'
+        default: ''
         description:
-          - On SLES systems, specifies the saptune version
+          - (SUSE specific) Version of saptune to install.
+          - This will replace the current installed version if present, even downgrade if necessary.
         required: false
         type: str
 
       sap_netweaver_preconfigure_saptune_solution:
         default: 'NETWEAVER'
         description:
-          - On SLES systems, specifies the saptune solution to apply.
+          - (SUSE specific) Saptune solution to be applied.
         choices:
           - 'NETWEAVER'
           - 'NETWEAVER+HANA'
@@ -113,3 +120,10 @@ argument_specs:
           - 'S4HANA-DBSERVER'
         required: false
         type: str
+
+      sap_netweaver_preconfigure_saptune_solution_force:
+        default: false
+        description:
+          - (SUSE specific) Apply saptune solution regardless if it is already enabled and verified.
+        required: false
+        type: bool
